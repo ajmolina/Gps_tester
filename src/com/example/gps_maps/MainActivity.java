@@ -1,0 +1,285 @@
+package com.example.gps_maps;
+
+import java.text.DecimalFormat;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.location.Location;
+import android.os.BatteryManager;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
+
+public class MainActivity extends FragmentActivity implements
+GooglePlayServicesClient.ConnectionCallbacks,
+GooglePlayServicesClient.OnConnectionFailedListener {
+	private Button btn;
+	private TextView txt;
+	private TextView txt2;
+	boolean sw=false;
+	LatLng punto1;
+	LatLng punto2;
+	float bat1=0;
+	float bat2=0;
+	LocationClient loc ;
+	LocationRequest locr;
+	IntentFilter ifilter;
+	Intent batteryStatus;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+  
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main); 
+        loc = new LocationClient(this,this,this);
+        loc.connect();
+        btn=(Button)findViewById(R.id.iniciar);
+        // Create the LocationRequest object
+        locr = LocationRequest.create();
+        // Use high accuracy
+        locr.setInterval(5);
+        locr.setFastestInterval(1);
+        locr.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        batteryStatus = this.registerReceiver(null, ifilter);
+        
+  
+        
+    	btn.setOnClickListener(new OnClickListener() 
+		{
+			
+			@Override
+			public void onClick(View v){
+				
+			
+				
+				//actual();
+				localizar.run();
+				segundoplano.run();
+				
+			
+			
+			
+				
+			}
+		
+			
+			
+		});
+        
+    
+        
+    }
+ 
+    
+    
+    
+    Thread segundoplano = new Thread(new Runnable() {
+    	@SuppressWarnings("null")
+		@Override
+    	public void run() {
+			
+    		int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+    		int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+    	    float batteryPct = (level / (float)scale)*100;
+    		
+    		if(sw==false){
+    			
+    			bat1=batteryPct;
+    			sw=true;
+    			
+    		}
+    		else{
+    			
+    			bat2=batteryPct;
+    			txt=(TextView)findViewById(R.id.bats);
+    			txt2=(TextView)findViewById(R.id.dist);
+    			txt.setText(Float.toString(bat1-bat2) + "%");
+    		
+    			Location a = new Location("A");
+    			a.setLatitude(punto1.latitude);
+    			a.setLongitude(punto1.longitude);
+    			Location b= new Location("B");
+    			b.setLatitude(punto2.latitude);
+    			b.setLongitude(punto2.longitude);
+    			 double distancia = a.distanceTo(b);
+    			 
+    			 if(distancia >=1000){
+    				 
+    				 distancia=distancia/1000;
+    				 txt2.setText(String.format("%.2f", distancia)+ " Km");
+    			 }
+    			 else{
+    			 
+    			 
+    			  txt2.setText(String.valueOf(distancia)+ " metros");
+    			 }
+    			 
+    			
+    			
+    			
+    			
+    		}
+    	    
+    	    
+    	
+    		}	
+    
+	});
+    
+    
+    
+    Thread localizar = new Thread(new Runnable() {
+    	@Override
+    	
+    	
+    	public void run(){
+    		
+    		GoogleMap mMap= null;
+    		  Location act = loc.getLastLocation();
+    	    
+    	    	if(act!=null){
+    	    		
+    	    		if (mMap == null) {
+    	         	     
+    	       	      mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+    	      	
+    	      	   
+    	      	   
+    	      	   if (mMap != null) {
+    	       	      LatLng pos = new LatLng(act.getLatitude(),act.getLongitude());
+    	     	        
+    	       	      
+    	     	        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+    	     	        	
+    	     	         mMap.setMyLocationEnabled(true);
+    	     	         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+    	                  act.getLatitude(), act.getLongitude()), 15));
+    	     	         
+    	     	         if(sw==false){
+    	     	        	 
+    	     	                Marker myMaker = mMap.addMarker(new MarkerOptions()
+    	    	     	       .position(pos)
+    	    	     	       .title("Inicio")  
+    	    	     	       .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))); //Color del marcador
+    	    	     	         punto1=pos;
+    	     	        	 
+    	     	         }
+    	     	         else{
+	    	     	         punto2=pos;
+
+    	     	        	 
+    	     	            Marker myMaker = mMap.addMarker(new MarkerOptions()
+    	    	     	       .position(punto2)
+    	    	     	       .title("Llegada")  
+    	    	     	       .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))); //Color del marcador
+    	     	        	 
+    	     	            
+    	     	            
+    	     	           mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+    	     	                  punto2.latitude, punto2.longitude), 15));
+    	     	           
+    	     	          
+    	     	         }
+    	     	         
+    	     	    
+    	     	  
+    	     	         
+    	     	        ;
+    	     	      }
+    	      	   }
+    	    		
+    	    		
+    	    		
+    	    		
+    	    	}
+    		
+    		
+    	}
+    	
+    });
+    
+    
+    
+    
+    private void actual(){
+    	
+    	GoogleMap mMap= null;
+	  Location act = loc.getLastLocation();
+    
+    	if(act!=null){
+    		
+    		if (mMap == null) {
+         	     
+       	      mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+      	
+      	   
+      	   
+      	   if (mMap != null) {
+       	      LatLng pos = new LatLng(act.getLatitude(),act.getLongitude());
+     	        
+       	      
+     	        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+     	        	
+     	         mMap.setMyLocationEnabled(true);
+     	         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+                  act.getLatitude(), act.getLongitude()), 15));
+     	        Marker myMaker = mMap.addMarker(new MarkerOptions()
+     	       .position(pos)
+     	       .title("Inicio")  
+     	      
+     	       .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))); //Color del marcador
+     	         
+     	         
+     	         
+     	        ;
+     	      }
+      	   }
+    		
+    		
+    		
+    		
+    	}
+   
+  
+    }
+    
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onConnected(Bundle arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onDisconnected() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+    
+    
+}
+
+ 
