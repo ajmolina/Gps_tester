@@ -69,8 +69,20 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 			public void onClick(View v){
 				
 			
+				if(sw==false){
+					
+					btn.setText("Finalizar");
+					
+				}
+				else{
+					
+					btn.setText("Iniciar");
+					
+				}
 				
-				//actual();
+				
+				
+			
 				localizar.run();
 				segundoplano.run();
 				
@@ -107,7 +119,7 @@ GooglePlayServicesClient.OnConnectionFailedListener {
     			
     		}
     		else{
-    			
+    			sw=false;
     			bat2=batteryPct;
     			txt=(TextView)findViewById(R.id.bats);
     			txt2=(TextView)findViewById(R.id.dist);
@@ -129,7 +141,7 @@ GooglePlayServicesClient.OnConnectionFailedListener {
     			 else{
     			 
     			 
-    			  txt2.setText(String.valueOf(distancia)+ " metros");
+    			  txt2.setText(String.format("%.2f",distancia)+ " metros");
     			 }
     			 
     			
