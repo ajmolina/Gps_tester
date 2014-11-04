@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -32,9 +33,16 @@ public class MainActivity extends FragmentActivity implements
 GooglePlayServicesClient.ConnectionCallbacks,
 GooglePlayServicesClient.OnConnectionFailedListener {
 	private Button btn;
+	private Button btn2;
+	private Button btn3;
 	private TextView txt;
 	private TextView txt2;
 	boolean sw=false;
+	boolean pres1=false;
+	boolean pres2=false;
+	boolean pres3=false;
+	boolean vis1= false;
+	boolean vis2=false;
 	LatLng punto1;
 	LatLng punto2;
 	float bat1=0;
@@ -50,12 +58,15 @@ GooglePlayServicesClient.OnConnectionFailedListener {
         setContentView(R.layout.activity_main); 
         loc = new LocationClient(this,this,this);
         loc.connect();
+        btn2=(Button)findViewById(R.id.presi);
         btn=(Button)findViewById(R.id.iniciar);
+        btn3=(Button)findViewById(R.id.vis);
         // Create the LocationRequest object
         locr = LocationRequest.create();
         // Use high accuracy
         locr.setInterval(5);
         locr.setFastestInterval(1);
+        pres1=true;
         locr.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         batteryStatus = this.registerReceiver(null, ifilter);
@@ -69,6 +80,28 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 			public void onClick(View v){
 				
 			
+            if(pres1==true){
+					
+					Toast.makeText(getApplicationContext(), "Nivel de presicion:BALANCED POWER ACCURACY",
+							   Toast.LENGTH_SHORT).show();
+				}
+			
+	          if(pres2==true){
+					
+					Toast.makeText(getApplicationContext(), "Nivel de presicion: PRIORITY HIGH ACCURACY",
+							   Toast.LENGTH_SHORT).show();
+				}
+	          if(pres3==true){
+					
+					Toast.makeText(getApplicationContext(), "Nivel de presicion: LOW POWER",
+							   Toast.LENGTH_SHORT).show();
+				}
+				
+				
+					
+				
+				
+				
 				if(sw==false){
 					
 					btn.setText("Finalizar");
@@ -97,7 +130,110 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 		});
         
     
+    	btn2.setOnClickListener(new OnClickListener() 
+		{
+			
+			@Override
+			public void onClick(View v){
+				
+              if(pres1==true && pres2==false && pres3==false){
+					
+            	  
+            	  locr.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            	  
+            	  
+					Toast.makeText(getApplicationContext(), "Nivel de presicion:  HIGH ACCURACY",
+							   Toast.LENGTH_SHORT).show();
+					pres1=false;
+					pres2=true;
+					pres3=false;
+					
+					
+				}
+              
+              else{
+            	  if(pres2==true&&pres1==false&&pres3==false){
+  					
+            		  locr.setPriority(LocationRequest.PRIORITY_LOW_POWER);  
+            		  
+  					Toast.makeText(getApplicationContext(), "Nivel de presicion: LOW POWER",
+  							   Toast.LENGTH_SHORT).show();
+  					
+  					pres1=false;
+  					pres2=false;
+  					pres3=true;
+  				}
+            	  else{
+            		  if(pres3==true&&pres1==false&&pres2==false){
+            		  
+            		  locr.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);  
+            		  
+    				  Toast.makeText(getApplicationContext(), "Nivel de presicion: BALANCED POWER ACCURACY",
+    							   Toast.LENGTH_SHORT).show();
+            		  
+            		  pres1=true;
+            		  pres2=false;
+            		  pres3=false;
+            		  }
+            		  
+            		  
+            	  }
+            	  
+            	  
+              }
+			
+	         
+	       
+				
+			}
+			});
         
+    	
+     	btn3.setOnClickListener(new OnClickListener() 
+    		{
+    			
+    			@Override
+    			public void onClick(View v){
+    	     if(vis1==true){
+    	    	vis1=false;
+    	    	vis2=true;
+    	    	 try{
+    	    	 GoogleMap mMap= ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+    	    	 
+    	    	  mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+    	          punto1.latitude, punto1.longitude), 15));
+    	    	
+    	    	 }
+    	    	 catch(Exception ex){
+    	    		 
+    	    		 
+    	    	 }
+    	     }
+    	     
+    	     else{
+    	    	if(vis2=true){
+    	    		
+    	    		vis2=false;
+    	    		vis1=true;
+    	    	
+    	    	 
+    	    	 try{
+        	    	 GoogleMap mMap= ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+        	    	 
+        	    	  mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+        	          punto2.latitude, punto2.longitude), 15));
+        	    	
+        	    	 }
+        	    	 catch(Exception ex){
+        	    		 
+        	    		 
+        	    	 }
+    	     }
+    	    	 
+    	     }
+    				
+    			}
+    			});
     }
  
     
@@ -192,11 +328,12 @@ GooglePlayServicesClient.OnConnectionFailedListener {
     	    	     	       .title("Inicio")  
     	    	     	       .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))); //Color del marcador
     	    	     	         punto1=pos;
+    	    	     	         vis2=true;
     	     	        	 
     	     	         }
     	     	         else{
 	    	     	         punto2=pos;
-
+                             vis1=true;
     	     	        	 
     	     	            Marker myMaker = mMap.addMarker(new MarkerOptions()
     	    	     	       .position(punto2)

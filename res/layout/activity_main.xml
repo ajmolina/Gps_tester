@@ -1,56 +1,85 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="450dp"
+    android:layout_height="650dp"
     tools:context=".MainActivity" >
 
-     <fragment
-         android:id="@+id/map"
-         android:name="com.google.android.gms.maps.MapFragment"
-         android:layout_width="match_parent"
-         android:layout_height="360dp"
-         android:layout_alignParentLeft="true"
-         android:layout_alignParentRight="true" />
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="360dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true" />
 
-     <Button
-         android:id="@+id/iniciar"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignParentLeft="true"
-         android:layout_alignParentRight="true"
-         android:layout_below="@+id/map"
-         android:background="#ADDBD9"
-         android:text="Iniciar" />
+    <Button
+        android:id="@+id/iniciar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/map"
+        android:background="#00ffff"
+        android:text="Iniciar" />
 
-     <TextView
-         android:id="@+id/textView1"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignParentLeft="true"
-         android:layout_below="@+id/iniciar"
-         android:text="Bateria consumida :" />
+    <Button
+        android:id="@+id/presi"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/iniciar"
+        android:background="#00ffb2"
+        android:text="Presicion"
+        android:width="100dp" />
 
-     <TextView
-         android:id="@+id/bats"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignBaseline="@+id/textView1"
-         android:layout_alignBottom="@+id/textView1"
-         android:layout_alignParentRight="true" />
+    <Button
+        android:id="@+id/vis"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/presi"
+        android:background="#61ff00"
+        android:text="Visitar"
+        android:width="70dp" />
 
-     <TextView
-         android:id="@+id/textView2"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignParentBottom="true"
-         android:layout_alignParentLeft="true"
-         android:text="Distancia" />
+    <TextView
+        android:id="@+id/bats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textView2"
+        android:layout_alignBottom="@+id/textView2"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="79dp"
+        />
 
-     <TextView
-         android:id="@+id/dist"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignParentBottom="true"
-         android:layout_alignParentRight="true" />
-    
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/vis"
+        android:layout_marginLeft="96dp"
+        android:text="Consumo:" />
+
+    <TextView
+        android:id="@+id/dist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/bats"
+        android:layout_below="@+id/bats"
+         />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_below="@+id/textView2"
+        android:text="Distancia"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
 </RelativeLayout>
