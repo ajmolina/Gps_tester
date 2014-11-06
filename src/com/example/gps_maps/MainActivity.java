@@ -47,6 +47,7 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 	LatLng punto2;
 	float bat1=0;
 	float bat2=0;
+	 float batteryPct =0;
 	LocationClient loc ;
 	LocationRequest locr;
 	IntentFilter ifilter;
@@ -117,6 +118,7 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 				
 			
 				localizar.run();
+		 
 				segundoplano.run();
 				
 			
@@ -236,30 +238,45 @@ GooglePlayServicesClient.OnConnectionFailedListener {
     			});
     }
  
-    
+
     
     
     Thread segundoplano = new Thread(new Runnable() {
+    	
+    
+        
     	@SuppressWarnings("null")
 		@Override
+
     	public void run() {
-			
+    		actualizar();
     		int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
     		int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
     	    float batteryPct = (level / (float)scale)*100;
     		
     		if(sw==false){
     			
+    		
     			bat1=batteryPct;
     			sw=true;
+    		
+  		  
     			
     		}
     		else{
+    			
+    		
+        		
+    			float resul;
     			sw=false;
     			bat2=batteryPct;
+    		
+		  
+    			
     			txt=(TextView)findViewById(R.id.bats);
     			txt2=(TextView)findViewById(R.id.dist);
-    			txt.setText(Float.toString(bat1-bat2) + "%");
+    			resul= bat1-bat2;
+    			txt.setText(Float.toString(resul) + "%");
     		
     			Location a = new Location("A");
     			a.setLatitude(punto1.latitude);
@@ -282,7 +299,8 @@ GooglePlayServicesClient.OnConnectionFailedListener {
     			 
     			
     			
-    			
+    			bat1=0;
+    			bat2=0;
     			
     		}
     	    
@@ -365,50 +383,15 @@ GooglePlayServicesClient.OnConnectionFailedListener {
     	
     });
     
+    public void actualizar(){
     
-    
-    
-    private void actual(){
-    	
-    	GoogleMap mMap= null;
-	  Location act = loc.getLastLocation();
-    
-    	if(act!=null){
-    		
-    		if (mMap == null) {
-         	     
-       	      mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-      	
-      	   
-      	   
-      	   if (mMap != null) {
-       	      LatLng pos = new LatLng(act.getLatitude(),act.getLongitude());
-     	        
-       	      
-     	        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-     	        	
-     	         mMap.setMyLocationEnabled(true);
-     	         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
-                  act.getLatitude(), act.getLongitude()), 15));
-     	        Marker myMaker = mMap.addMarker(new MarkerOptions()
-     	       .position(pos)
-     	       .title("Inicio")  
-     	      
-     	       .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))); //Color del marcador
-     	         
-     	         
-     	         
-     	        ;
-     	      }
-      	   }
-    		
-    		
-    		
-    		
-    	}
-   
-  
+    	ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        batteryStatus = this.registerReceiver(null, ifilter);
     }
+    
+    
+    
+ 
     
 
 	@Override
